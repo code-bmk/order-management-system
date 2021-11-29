@@ -21,7 +21,13 @@ public class PaymentServiceImpl implements PaymentService
     private final OrderService orderService;
     private final CustomerService customerService;
 
-
+    /**
+     * Constructor based injection
+     *
+     * @param paymentRepository PaymentRepository
+     * @param orderService OrderService
+     * @param customerService CustomerService
+     */
     @Autowired
     public PaymentServiceImpl(final PaymentRepository paymentRepository, final OrderService orderService, final CustomerService customerService)
     {
@@ -30,14 +36,28 @@ public class PaymentServiceImpl implements PaymentService
         this.customerService = customerService;
     }
 
-
+    /**
+     * Gets all payments for a given customerId,
+     * if an invalid customerId is given returns empty list
+     *
+     * @param customerId Long
+     * @return List<PaymentEntity>
+     */
     @Override
     public List<PaymentEntity> getPayments(Long customerId)
     {
         return paymentRepository.findByCustomerId(customerId);
     }
 
-
+    /**
+     * Registers a payment for a given orderId,
+     * updates the customer and order balances
+     *
+     * @param orderId Long
+     * @param paymentDTO PaymentDTO
+     * @return PaymentEntity
+     * @throws EntityNotFoundException if no order or customer is found for the given orderId
+     */
     @Override
     @Transactional
     public PaymentEntity makePaymentForOrder(Long orderId, PaymentDTO paymentDTO) throws EntityNotFoundException
@@ -55,7 +75,13 @@ public class PaymentServiceImpl implements PaymentService
         return payment;
     }
 
-
+    /**
+     * Updates the relationship between the payment and customer entities
+     *
+     * @param customer CustomerEntity
+     * @param orderId Long
+     * @param payment PaymentEntity
+     */
     private void updatePaymentRelationship(CustomerEntity customer, Long orderId, PaymentEntity payment)
     {
         payment.setOrderId(orderId);

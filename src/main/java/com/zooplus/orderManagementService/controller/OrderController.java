@@ -14,6 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * All operations with an order will be routed by this controller.
+ * <p/>
+ */
 @RestController
 @RequestMapping("v1/orders")
 public class OrderController

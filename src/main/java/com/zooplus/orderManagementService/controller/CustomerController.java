@@ -51,7 +51,7 @@ public class CustomerController
 
     @GetMapping
     public List<CustomerDTO> getAllCustomers() {
-        return CustomerMapper.makeCustomerDTOList(customerService.getAll());
+        return CustomerMapper.makeCustomerDTOList(customerService.findAll());
     }
 
     @PostMapping

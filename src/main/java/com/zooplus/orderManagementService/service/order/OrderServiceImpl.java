@@ -21,7 +21,12 @@ public class OrderServiceImpl implements OrderService
     private final OrderRepository orderRepository;
     private final CustomerService customerService;
 
-
+    /**
+     * Constructor based injection
+     *
+     * @param orderRepository OrderRepository
+     * @param customerService CustomerService
+     */
     @Autowired
     public OrderServiceImpl(final OrderRepository orderRepository, final CustomerService customerService)
     {
@@ -29,21 +34,40 @@ public class OrderServiceImpl implements OrderService
         this.customerService = customerService;
     }
 
-
+    /**
+     * Find an order by orderId
+     *
+     * @param orderId Long
+     * @return OrderEntity
+     * @throws EntityNotFoundException if no customer with the given id was found.
+     */
     @Override
     public OrderEntity find(Long orderId) throws EntityNotFoundException
     {
-        return findOrder(orderId);
+        return orderRepository.findById(orderId)
+            .orElseThrow(() -> new EntityNotFoundException(ORDER_NOT_FOUND + orderId));
     }
 
-
+    /**
+     * Gets all orders for a given customerId
+     *
+     * @param customerId Long
+     * @return List<OrderEntity>
+     */
     @Override
     public List<OrderEntity> getOrders(Long customerId)
     {
         return orderRepository.findByCustomerId(customerId);
     }
 
-
+    /**
+     * Creates a new order for a given customerId
+     *
+     * @param customerId Long
+     * @param orderDTO OrderDTO
+     * @return OrderEntity
+     * @throws EntityNotFoundException if a customer with given customerId is not found
+     */
     @Override
     @Transactional
     public OrderEntity createOrder(Long customerId, OrderDTO orderDTO) throws EntityNotFoundException
@@ -64,12 +88,5 @@ public class OrderServiceImpl implements OrderService
         return order;
     }
 
-
-    private OrderEntity findOrder(Long orderId) throws EntityNotFoundException
-    {
-        return orderRepository.findById(orderId)
-            .orElseThrow(() -> new EntityNotFoundException(ORDER_NOT_FOUND + orderId));
-
-    }
 
 }

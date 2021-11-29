@@ -10,7 +10,7 @@ public interface CustomerService
 {
     CustomerEntity create(CustomerDTO customerDTO) throws ConstraintsViolationException;
 
-    List<CustomerEntity> getAll();
+    List<CustomerEntity> findAll();
 
     CustomerEntity find(Long customerId) throws EntityNotFoundException;
 
