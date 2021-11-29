@@ -12,14 +12,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.zooplus.orderManagementService.constants.ExceptionMessageConstants.ORDER_NOT_FOUND;
+
 @Service
 public class OrderServiceImpl implements OrderService
 {
-    @Autowired
-    private CustomerService customerService;
+
+    private final OrderRepository orderRepository;
+    private final CustomerService customerService;
+
 
     @Autowired
-    private OrderRepository orderRepository;
+    public OrderServiceImpl(final OrderRepository orderRepository, final CustomerService customerService)
+    {
+        this.orderRepository = orderRepository;
+        this.customerService = customerService;
+    }
+
 
     @Override
     public OrderEntity find(Long orderId) throws EntityNotFoundException
@@ -27,20 +36,24 @@ public class OrderServiceImpl implements OrderService
         return findOrder(orderId);
     }
 
+
     @Override
     public List<OrderEntity> getOrders(Long customerId)
     {
         return orderRepository.findByCustomerId(customerId);
     }
 
+
     @Override
     @Transactional
     public OrderEntity createOrder(Long customerId, OrderDTO orderDTO) throws EntityNotFoundException
     {
         CustomerEntity customer = customerService.find(customerId);
+        //Update the customer balance during creation of an order
         customer.setCustomerBalance(customer.getCustomerBalance() - orderDTO.getOrderAmount());
 
         OrderEntity order = OrderMapper.makeOrderEntity(orderDTO);
+        //Update the order balance during creation of an order
         order.setOrderBalance(order.getOrderBalance() - orderDTO.getOrderAmount());
         order.setOrderCustomerEntity(customer);
 
@@ -51,10 +64,11 @@ public class OrderServiceImpl implements OrderService
         return order;
     }
 
+
     private OrderEntity findOrder(Long orderId) throws EntityNotFoundException
     {
         return orderRepository.findById(orderId)
-            .orElseThrow(() -> new EntityNotFoundException("Cannot find an order with id: " + orderId));
+            .orElseThrow(() -> new EntityNotFoundException(ORDER_NOT_FOUND + orderId));
 
     }
 

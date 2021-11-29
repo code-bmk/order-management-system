@@ -2,14 +2,18 @@ package com.zooplus.orderManagementService.controller;
 
 import com.zooplus.orderManagementService.dao.entities.CustomerEntity;
 import com.zooplus.orderManagementService.dao.entities.OrderEntity;
+import com.zooplus.orderManagementService.dao.entities.PaymentEntity;
 import com.zooplus.orderManagementService.dto.CustomerDTO;
 import com.zooplus.orderManagementService.dto.OrderDTO;
+import com.zooplus.orderManagementService.dto.PaymentDTO;
 import com.zooplus.orderManagementService.exception.ConstraintsViolationException;
 import com.zooplus.orderManagementService.exception.EntityNotFoundException;
+import com.zooplus.orderManagementService.mapper.PaymentMapper;
 import com.zooplus.orderManagementService.service.customer.CustomerService;
 import com.zooplus.orderManagementService.mapper.CustomerMapper;
 import com.zooplus.orderManagementService.mapper.OrderMapper;
 import com.zooplus.orderManagementService.service.order.OrderService;
+import com.zooplus.orderManagementService.service.payment.PaymentService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,12 +38,15 @@ public class CustomerController
 
     private final OrderService orderService;
 
+    private final PaymentService paymentService;
+
 
     @Autowired
-    public CustomerController(final CustomerService customerService, final OrderService orderService)
+    public CustomerController(final CustomerService customerService, final OrderService orderService, final PaymentService paymentService)
     {
         this.customerService = customerService;
         this.orderService = orderService;
+        this.paymentService = paymentService;
     }
 
     @GetMapping
@@ -76,6 +83,13 @@ public class CustomerController
     {
         OrderEntity orderEntity = orderService.createOrder(customerId, orderDTO);
         return OrderMapper.makeOrderDTO(orderEntity);
+    }
+
+    @GetMapping("/{customerId}/payments")
+    public List<PaymentDTO> getCustomerPayments(@PathVariable Long customerId) throws EntityNotFoundException
+    {
+        List<PaymentEntity> payments = paymentService.getPayments(customerId);
+        return PaymentMapper.makePaymentDTOList(payments);
     }
 
 

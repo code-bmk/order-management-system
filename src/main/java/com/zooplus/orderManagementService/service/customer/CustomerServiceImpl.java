@@ -2,7 +2,6 @@ package com.zooplus.orderManagementService.service.customer;
 
 import com.zooplus.orderManagementService.dao.entities.CustomerEntity;
 import com.zooplus.orderManagementService.dao.repo.CustomerRepository;
-import com.zooplus.orderManagementService.dao.repo.OrderRepository;
 import com.zooplus.orderManagementService.dto.CustomerDTO;
 import com.zooplus.orderManagementService.exception.ConstraintsViolationException;
 import com.zooplus.orderManagementService.exception.EntityNotFoundException;
@@ -12,19 +11,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import static com.zooplus.orderManagementService.constants.ExceptionMessageConstants.CUSTOMER_NOT_FOUND;
+
 @Service
 public class CustomerServiceImpl implements CustomerService
 {
     private final CustomerRepository customerRepository;
 
-    private final OrderRepository orderRepository;
-
 
     @Autowired
-    public CustomerServiceImpl(final CustomerRepository customerRepository, final OrderRepository orderRepository)
+    public CustomerServiceImpl(final CustomerRepository customerRepository)
     {
         this.customerRepository = customerRepository;
-        this.orderRepository = orderRepository;
     }
 
 
@@ -60,7 +58,7 @@ public class CustomerServiceImpl implements CustomerService
     private CustomerEntity findCustomer(Long customerId) throws EntityNotFoundException
     {
         return customerRepository.findById(customerId)
-            .orElseThrow(() -> new EntityNotFoundException("Cannot find a customer with id: " + customerId));
+            .orElseThrow(() -> new EntityNotFoundException(CUSTOMER_NOT_FOUND + customerId));
 
     }
 
